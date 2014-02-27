@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           turkopticon
-// @version        devel-2014.01.28.1207
+// @version        2014.02.27.1520
 // @description    Review requesters on Amazon Mechanical Turk
 // @author         Lilly Irani and Six Silberman
-// @homepage       http://turkopticon-devel.differenceengines.com
+// @homepage       http://turkopticon.ucsd.edu
 // @include        http://*.mturk.com/*
 // @include        https://*.mturk.com/*
 // ==/UserScript==
@@ -150,10 +150,12 @@ function insertInlineCss() {
 	head.innerHTML = css + head.innerHTML;
 }
 
-function getNamesForEmptyResponses(rai, resp) {
+function getNames(rai, resp) {
 	for(var rid in rai) {
-		if (rai.hasOwnProperty(rid) && resp[rid] == "") {
-			resp[rid] = JSON.parse('{"name": "' + rai[rid][0].innerHTML + '"}'); } }
+		if (rai.hasOwnProperty(rid)) {
+			if (resp[rid] == "") {  // empty response, no data in Turkopticon DB for this ID
+				resp[rid] = JSON.parse('{"name": "' + rai[rid][0].innerHTML + '"}'); }
+			resp[rid].name = rai[rid][0].innerHTML; } }  // overwrite name attribute of response object from page
 	return resp; }
 
 function insertDropDowns(rai, resp) {
@@ -169,6 +171,6 @@ var reqAnchors = getRequesterAnchorsAndIds(a);
 if (reqAnchors) {
     var url = buildXhrUrl(reqAnchors);
     var resp = makeXhrQuery(url);
-    resp = getNamesForEmptyResponses(reqAnchors, resp);
+    resp = getNames(reqAnchors, resp);
     insertDropDowns(reqAnchors, resp);
 }
