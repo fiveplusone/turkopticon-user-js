@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           turkopticon
-// @version        2014.02.27.1520
+// @version        2014.08.20.1512
 // @description    Review requesters on Amazon Mechanical Turk
 // @author         Lilly Irani and Six Silberman
 // @homepage       http://turkopticon.ucsd.edu
@@ -154,8 +154,9 @@ function getNames(rai, resp) {
 	for(var rid in rai) {
 		if (rai.hasOwnProperty(rid)) {
 			if (resp[rid] == "") {  // empty response, no data in Turkopticon DB for this ID
-				resp[rid] = JSON.parse('{"name": "' + rai[rid][0].innerHTML + '"}'); }
-			resp[rid].name = rai[rid][0].innerHTML; } }  // overwrite name attribute of response object from page
+				resp[rid] = JSON.parse('{"name": "' + rai[rid][0].innerHTML.split("</span>")[0].split(">")[1] + '"}'); 
+			}
+			resp[rid].name = rai[rid][0].innerHTML.split("</span>")[0].split(">")[1]; } }  // overwrite name attribute of response object from page
 	return resp; }
 
 function insertDropDowns(rai, resp) {
