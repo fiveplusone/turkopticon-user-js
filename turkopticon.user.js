@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           turkopticon
-// @version        2020.06.30.0
+// @version        2020.06.30.1
 // @description    Review requesters on Amazon Mechanical Turk
 // @author         Lilly Irani, Six Silberman, anonymous contributors
 // @homepage       https://turkopticon.ucsd.edu
@@ -165,6 +165,12 @@ function dropDown(ro, rid, hitid, hitname) {
 	return dd; }
 
 function insertInlineCss() {
+  var requester_bar = $('.detail-bar-label:contains(Requester)').next();
+  if (requester_bar) {
+    var parent_bar = requester_bar.parent();
+    parent_bar.css("overflow", "visible");
+  }
+
     var head = document.getElementsByTagName("head")[0],
         style = document.createElement('style'),
         css = ".tob, .tom { list-style-type: none; padding-left: 0; }\n";
@@ -213,7 +219,8 @@ function insertDropDowns(rai, resp) {
 			for(var i = 0; i < rai[rid].length; i++) {
         var td = rai[rid][i].parentNode;
 				if (td.parentNode.parentNode.childNodes.length > 5) {
-					var check = td.parentNode.parentNode.childNodes[5].childNodes[0].childNodes[0].getAttribute("href");
+          if (td.parentNode.parentNode.childNodes[5].childNodes[0].childNodes[0])
+            var check = td.parentNode.parentNode.childNodes[5].childNodes[0].childNodes[0].getAttribute("href");
 					if (check != null) {
 						var hitid = td.parentNode.parentNode.childNodes[5].childNodes[0].childNodes[0].getAttribute("href").match(/\/([A-Z0-9]+)\//)[1];
 					} else { 
@@ -221,8 +228,10 @@ function insertDropDowns(rai, resp) {
 					}
 				} else {
 					var hitid = "";
-				}
-				var hitname = td.parentNode.parentNode.childNodes[1].getAttribute("title");
+        }
+        if (td.parentNode.parentNode.childNodes[1]) {
+          var hitname = td.parentNode.parentNode.childNodes[1].getAttribute("title");
+        }
 				td.innerHTML = dropDown(resp[rid], rid, hitid, hitname) + " "  + td.innerHTML;
       }
     }
